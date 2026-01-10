@@ -1,6 +1,0 @@
-@import "tailwindcss";
-
-/* global styles only */
-body {
-  @apply text-gray-800;
-}
