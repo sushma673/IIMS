@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { useAuth } from "../../context/AuthContext"; // ✅ import AuthContext
+import { useNavigate, Link } from "react-router-dom";
 import {
   Search,
   School,
@@ -10,25 +9,80 @@ import {
   LogIn,
   Award,
   BookOpen,
-  MapPin,
   ArrowRightCircle,
   Users,
   Layers,
+  LogOut,
 } from "lucide-react";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import InstituteCard from "../../components/InstituteCard";
 
 export default function Home() {
   const navigate = useNavigate();
-  const { user } = useAuth(); // ✅ get logged-in user
 
-  /* ---------------- SLIDER IMAGES ---------------- */
+  const [userEmail, setUserEmail] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [institutes, setInstitutes] = useState([]);
+  const [filteredInstitutes, setFilteredInstitutes] = useState([]);
+  const [current, setCurrent] = useState(0);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  /* ---------------- FETCH USER EMAIL ---------------- */
+  useEffect(() => {
+    const email =
+      localStorage.getItem("email") || localStorage.getItem("userEmail");
+    if (email) setUserEmail(email);
+  }, []);
+
+  /* ---------------- FETCH INSTITUTES ---------------- */
+  useEffect(() => {
+    fetch("/api/institutes")
+      .then((res) => res.json())
+      .then((data) => {
+        setInstitutes(data);
+        setFilteredInstitutes(data);
+      })
+      .catch((err) => console.error("Error fetching institutes:", err));
+  }, []);
+
+  /* ---------------- LOGOUT ---------------- */
+  const handleLogout = () => {
+    toast.info(
+      ({ closeToast }) => (
+        <div>
+          <p className="font-semibold mb-3">Do you want to logout?</p>
+          <div className="flex justify-end gap-3">
+            <button
+              onClick={() => {
+                localStorage.clear();
+                closeToast();
+                toast.success("Logged out successfully 👋");
+                setTimeout(() => navigate("/"), 1000);
+              }}
+              className="bg-red-600 text-white px-4 py-1 rounded"
+            >
+              Yes
+            </button>
+            <button
+              onClick={closeToast}
+              className="bg-gray-300 px-4 py-1 rounded"
+            >
+              No
+            </button>
+          </div>
+        </div>
+      ),
+      { autoClose: false, closeOnClick: false, closeButton: false }
+    );
+  };
+
+  /* ---------------- HERO SLIDER ---------------- */
   const images = [
     "https://images.pexels.com/photos/256395/pexels-photo-256395.jpeg",
     "https://images.pexels.com/photos/207691/pexels-photo-207691.jpeg",
     "https://images.pexels.com/photos/1181406/pexels-photo-1181406.jpeg",
   ];
-
-  const [current, setCurrent] = useState(0);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     const timer = setInterval(
@@ -36,42 +90,88 @@ export default function Home() {
       3000
     );
     return () => clearInterval(timer);
-  }, [images.length]);
+  }, []);
 
   /* ---------------- STUDY GOALS ---------------- */
   const studyGoals = [
-    { title: "IT Training", icon: <Layers className="w-6 h-6 text-blue-600" />, items: ["Java", "Python", "React", "Data Science"] },
-    { title: "Medical Coding", icon: <Users className="w-6 h-6 text-green-600" />, items: ["ICD-10", "CPC", "Medical Billing"] },
-    { title: "Digital Marketing", icon: <BookOpen className="w-6 h-6 text-indigo-600" />, items: ["SEO", "Google Ads", "Social Media"] },
-    { title: "Government Exams", icon: <School className="w-6 h-6 text-pink-600" />, items: ["SSC", "Banking", "UPSC"] },
-    { title: "Medical", icon: <Award className="w-6 h-6 text-red-600" />, items: ["MBBS", "BDS", "Nursing"] },
-    { title: "Cyber Security", icon: <HomeIcon className="w-6 h-6 text-yellow-600" />, items: ["Ethical Hacking", "Network Security"] },
-    { title: "Hotel Management", icon: <Info className="w-6 h-6 text-cyan-600" />, items: ["Hospitality", "HM"] },
-    { title: "Soft Skills", icon: <Search className="w-6 h-6 text-emerald-600" />, items: ["English", "Communication", "Personality"] },
+    {
+      title: "IT Training",
+      icon: <Layers className="w-6 h-6 text-blue-600" />,
+      items: ["Java", "Python", "React"],
+    },
+    {
+      title: "Medical Coding",
+      icon: <Users className="w-6 h-6 text-green-600" />,
+      items: ["ICD-10", "CPC"],
+    },
+    {
+      title: "Digital Marketing",
+      icon: <BookOpen className="w-6 h-6 text-indigo-600" />,
+      items: ["SEO", "Ads"],
+    },
+    {
+      title: "Government Exams",
+      icon: <School className="w-6 h-6 text-pink-600" />,
+      items: ["SSC", "UPSC"],
+    },
+    {
+      title: "Medical",
+      icon: <Award className="w-6 h-6 text-red-600" />,
+      items: ["MBBS", "Nursing"],
+    },
+    {
+      title: "Cyber Security",
+      icon: <HomeIcon className="w-6 h-6 text-yellow-600" />,
+      items: ["Ethical Hacking"],
+    },
   ];
+
+  /* ---------------- SEARCH HANDLER ---------------- */
+  const handleSearch = () => {
+    const query = searchQuery.trim().toLowerCase();
+    if (!query) {
+      setFilteredInstitutes(institutes);
+      return;
+    }
+    const results = institutes.filter((inst) =>
+      inst.name.toLowerCase().includes(query)
+    );
+    setFilteredInstitutes(results);
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 font-sans">
+      <ToastContainer position="top-right" />
+
       {/* ---------------- NAVBAR ---------------- */}
       <nav className="fixed top-0 left-0 w-full bg-white shadow z-50">
         <div className="max-w-7xl mx-auto px-4 h-16 flex justify-between items-center">
-          <h1 className="font-extrabold text-lg md:text-xl">
+          <h1 className="font-extrabold text-lg">
             Institute Information Management System
           </h1>
 
           <div className="hidden md:flex gap-6 text-sm font-medium">
-            <a href="/" className="flex items-center gap-1">
+            <Link to="/home" className="flex items-center gap-1">
               <HomeIcon className="w-4 h-4" /> Home
-            </a>
-            <a href="/about" className="flex items-center gap-1">
+            </Link>
+            <Link to="/about" className="flex items-center gap-1">
               <Info className="w-4 h-4" /> About
-            </a>
-            <a href="/reviews" className="flex items-center gap-1">
-              <UserPlus className="w-4 h-4" /> Reviews & Ratings
-            </a>
-            <a href="/contact" className="flex items-center gap-1">
+            </Link>
+            <Link to="/reviews" className="flex items-center gap-1">
+              <UserPlus className="w-4 h-4" /> Reviews
+            </Link>
+            <Link to="/contact" className="flex items-center gap-1">
               <LogIn className="w-4 h-4" /> Contacts
-            </a>
+            </Link>
+
+            {userEmail && (
+              <button
+                onClick={handleLogout}
+                className="flex items-center gap-1 text-red-600"
+              >
+                <LogOut className="w-4 h-4" /> Logout
+              </button>
+            )}
           </div>
 
           <button
@@ -81,15 +181,6 @@ export default function Home() {
             <ArrowRightCircle />
           </button>
         </div>
-
-        {mobileMenuOpen && (
-          <div className="md:hidden bg-white border-t">
-            <a href="/" className="block px-4 py-2">Home</a>
-            <a href="/about" className="block px-4 py-2">About</a>
-            <a href="/reviews" className="block px-4 py-2">Reviews & Ratings</a>
-            <a href="/contact" className="block px-4 py-2">Contacts</a>
-          </div>
-        )}
       </nav>
 
       {/* ---------------- HERO ---------------- */}
@@ -97,31 +188,43 @@ export default function Home() {
         {images.map((img, i) => (
           <div
             key={i}
-            className={`absolute inset-0 bg-cover bg-center transition-opacity duration-1000 ${current === i ? "opacity-100" : "opacity-0"}`}
+            className={`absolute inset-0 bg-cover bg-center transition-opacity duration-1000 ${
+              current === i ? "opacity-100" : "opacity-0"
+            }`}
             style={{ backgroundImage: `url(${img})` }}
           />
         ))}
-
         <div className="absolute inset-0 bg-black/50" />
 
         <div className="relative z-10 h-full flex flex-col justify-center items-center text-center text-white px-4">
-          {/* ✅ Welcome Message */}
-          {user && user.email && (
-            <p className="text-lg mb-2">Welcome, <span className="font-semibold">{user.email}</span>!</p>
+          {userEmail && (
+            <p className="text-lg mb-2">
+              Welcome, <span className="font-semibold">{userEmail}</span>!
+            </p>
           )}
 
-          <h1 className="text-3xl md:text-5xl font-bold">
+          <h1 className="text-4xl md:text-5xl font-bold">
             Find the Best Institute
           </h1>
+
           <p className="mt-2 text-white/90">Search • Compare • Choose</p>
 
           {/* SEARCH BAR */}
-          <div className="mt-8 grid grid-cols-1 md:grid-cols-4 gap-3 w-full max-w-4xl">
-            <input className="p-3 rounded-md text-black" placeholder="Institute Name" />
-            <input className="p-3 rounded-md text-black" placeholder="Course" />
-            <input className="p-3 rounded-md text-black" placeholder="Location" />
-            <button className="bg-orange-500 hover:bg-orange-600 text-white rounded-md font-semibold flex items-center justify-center gap-2">
-              <Search className="w-4 h-4" /> Search
+          <div className="mt-6 flex w-full max-w-xl bg-white rounded-full overflow-hidden shadow-lg">
+            <input
+              type="text"
+              placeholder="Search institute, course, or category..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+              className="flex-1 px-5 py-3 text-gray-700 outline-none"
+            />
+            <button
+              onClick={handleSearch}
+              className="bg-amber-600 hover:bg-amber-700 text-white px-6 flex items-center gap-2"
+            >
+              <Search className="w-5 h-5" />
+              Search
             </button>
           </div>
         </div>
@@ -136,7 +239,11 @@ export default function Home() {
             <div
               key={g.title}
               onClick={() =>
-                navigate(`/institutes?category=${encodeURIComponent(g.title)}`)
+                navigate(
+                  `/institutes?category=${encodeURIComponent(
+                    g.title.toLowerCase()
+                  )}`
+                )
               }
               className="bg-white p-6 rounded-xl shadow hover:shadow-lg hover:scale-105 transition cursor-pointer"
             >
@@ -157,7 +264,25 @@ export default function Home() {
             </div>
           ))}
         </div>
+
+        {/* ---------------- INSTITUTES ---------------- */}
+        <div className="mt-12 grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filteredInstitutes.length > 0 ? (
+            filteredInstitutes.map((inst) => (
+              <InstituteCard key={inst.id} institute={inst} />
+            ))
+          ) : (
+            <p className="text-gray-500 col-span-full text-center">
+              No institutes found.
+            </p>
+          )}
+        </div>
       </main>
+
+      {/* ---------------- SMALL FOOTER ---------------- */}
+      <footer className="bg-gray-900 text-gray-400 text-center py-4">
+        © {new Date().getFullYear()} IIMS - Institute Information Management System
+      </footer>
     </div>
   );
 }

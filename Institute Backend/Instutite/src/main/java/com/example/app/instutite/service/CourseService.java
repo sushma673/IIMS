@@ -8,9 +8,15 @@ import java.util.List;
 public interface CourseService {
 
         CourseResponse createCourse(CourseRequest dto);
-        List<CourseResponse> createCourses(Long instituteId, List<CourseRequest> requests); // ✅ new bulk method
-        List<CourseResponse> getCoursesByInstitute(Long instituteId);
-        CourseResponse getCourseById(Long id);
-        void deleteCourse(Long id);
-    }
 
+        List<CourseResponse> createCourses(Long instituteId, List<CourseRequest> requests);
+
+        List<CourseResponse> getCoursesByInstitute(Long instituteId);
+
+        CourseResponse getCourseById(Long id);
+
+        // ✅ UPDATE
+        CourseResponse updateCourse(Long courseId, CourseRequest request);
+
+        void deleteCourse(Long id);
+}

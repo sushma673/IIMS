@@ -8,12 +8,12 @@ export default function InstituteCard({ institute }) {
       <div className="flex bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden w-full">
 
         {/* Left Image */}
-        <div className="w-48 h-40 flex-shrink:0">
+        <div className="w-48 h-40 flex-shrink-0 flex items-center justify-center bg-gray-100">
           {institute.images && institute.images.length > 0 ? (
             <img
               src={institute.images[0]}
               alt={institute.name}
-              className="w-full h-full object-cover"
+              className="w-full h-full object-contain"
             />
           ) : (
             <div className="w-full h-full bg-gray-200 flex items-center justify-center text-sm text-gray-500">

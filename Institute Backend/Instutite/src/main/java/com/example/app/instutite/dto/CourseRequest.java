@@ -1,8 +1,17 @@
 package com.example.app.instutite.dto;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
+
+
+import jakarta.validation.constraints.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 
 public class CourseRequest {
 
@@ -20,5 +29,4 @@ public class CourseRequest {
 
         @NotNull
         public Long instituteId;
-    }
-
+}

@@ -1,12 +1,14 @@
 package com.example.app.instutite.entity;
 
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+
+import java.util.ArrayList;
+import java.util.List;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -19,8 +21,8 @@ import lombok.Setter;
         }
 )
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-
 public class Course {
+
         @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY)
         private Long id;
@@ -31,7 +33,10 @@ public class Course {
         @Column(name = "course_code", nullable = false)
         private String courseCode;
 
+        @Column(columnDefinition = "TEXT")
         private String description;
+
+        @Column(columnDefinition = "TEXT")
         private String duration;
         private Double fees;
 
@@ -42,7 +47,12 @@ public class Course {
         @JsonIgnore
         private Institute institute;
 
+        @OneToMany(
+                mappedBy = "course",
+                cascade = CascadeType.ALL,
+                orphanRemoval = true
+        )
+        private List<Syllabus> syllabusList = new ArrayList<>();
 
-    }
 
-
+}

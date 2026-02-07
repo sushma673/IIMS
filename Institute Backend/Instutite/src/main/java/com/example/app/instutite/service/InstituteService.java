@@ -1,5 +1,7 @@
 package com.example.app.instutite.service;
 
+
+import com.example.app.instutite.dto.BranchRequest;
 import com.example.app.instutite.dto.InstituteRequest;
 import com.example.app.instutite.dto.InstituteResponse;
 
@@ -7,14 +9,25 @@ import java.util.List;
 
 public interface InstituteService {
 
-        InstituteResponse createInstitute(InstituteRequest request);
+    // Create institute
+    InstituteResponse createInstitute(InstituteRequest request);
 
-        List<InstituteResponse> getAllInstitutes();
+    // Get all institutes
+    List<InstituteResponse> getAllInstitutes();
 
-        InstituteResponse getInstituteById(Long id);
+    // Get institute by ID
+    InstituteResponse getInstituteById(Long id);
 
+    //  Update institute
+    InstituteResponse updateInstitute(Long id, InstituteRequest request);
 
-    }
+    //  Delete institute
+    void deleteInstitute(Long id);
 
+    InstituteResponse addBranches(Long id, List<BranchRequest> branches);
+
+    List<InstituteResponse> getInstitutesByCategory(String category);
+
+}
 
 

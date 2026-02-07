@@ -7,11 +7,10 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
-
 public class ReviewResponse {
-        private Long id;
-        private String username;
-        private int rating;
-        private String comment;
-    }
-    
+
+    private Long id;
+    private String email;
+    private int rating;
+    private String comment;
+}

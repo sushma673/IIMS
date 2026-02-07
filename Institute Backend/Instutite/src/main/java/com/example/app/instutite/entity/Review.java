@@ -1,10 +1,7 @@
 package com.example.app.instutite.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Entity
 @Table(name = "reviews")
@@ -18,12 +15,12 @@ public class Review {
         @GeneratedValue(strategy = GenerationType.IDENTITY)
         private Long id;
 
-        private String username;   // user who gave review
+        @Column(nullable = false)
+        private String email;     //  logged-in user email
 
-        private int rating;        // 1-5
+        @Column(nullable = false)
+        private int rating;       // 1–5
 
-        @Column(length = 1000)
+        @Column(nullable = false, length = 1000)
         private String comment;
-    }
-
-
+}

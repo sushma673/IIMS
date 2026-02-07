@@ -1,14 +1,15 @@
 package com.example.app.instutite.entity;
 
+import com.example.app.instutite.entity.Branch;
+import com.example.app.instutite.entity.Course;
+import com.example.app.instutite.entity.InstituteImage;
+import com.example.app.instutite.entity.Media;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
+import lombok.*;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
-
 
 @Getter
 @Setter
@@ -16,9 +17,8 @@ import java.util.List;
 @AllArgsConstructor
 @Entity
 @Table(name = "institute")
-
-
 public class Institute {
+
         @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY)
         private Long id;
@@ -50,21 +50,22 @@ public class Institute {
         private String email;
         private String website;
 
+        @JsonFormat(pattern = "HH:mm")
         private LocalTime openTime;
+
+        @JsonFormat(pattern = "HH:mm")
         private LocalTime closeTime;
 
-        // Relations
+        //  Relations (INITIALIZED)
         @OneToMany(mappedBy = "institute", cascade = CascadeType.ALL, orphanRemoval = true)
-        private List<InstituteImage> images;
-
-        @OneToMany(mappedBy = "institute", cascade = CascadeType.ALL, orphanRemoval = true)
-        private List<Branch> branches;
+        private List<InstituteImage> images = new ArrayList<>();
 
         @OneToMany(mappedBy = "institute", cascade = CascadeType.ALL, orphanRemoval = true)
-        private List<Course> courses;
+        private List<Branch> branches = new ArrayList<>();
 
         @OneToMany(mappedBy = "institute", cascade = CascadeType.ALL, orphanRemoval = true)
-        private List<Media> mediaList;
-    }
+        private List<Course> courses = new ArrayList<>();
 
-
+        @OneToMany(mappedBy = "institute", cascade = CascadeType.ALL, orphanRemoval = true)
+        private List<Media> mediaList = new ArrayList<>();
+}

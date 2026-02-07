@@ -1,9 +1,6 @@
 package com.example.app.instutite.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import java.time.LocalTime;
 import java.util.List;
 
@@ -11,9 +8,10 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-
+@Builder
 
 public class InstituteResponse {
+
         private Long id;
         private String name;
         private String description;
@@ -22,6 +20,7 @@ public class InstituteResponse {
         private String facilities;
         private String benefits;
         private String accreditation;
+
         private String address;
         private String city;
         private String state;
@@ -37,5 +36,5 @@ public class InstituteResponse {
 
         private List<String> images;
         private List<BranchResponse> branches;
-    }
-
+        private List<CourseResponse> courses;   // ✅ VERY IMPORTANT
+}

@@ -1,7 +1,11 @@
 package com.example.app.instutite.entity;
 
+
+
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "media")
@@ -10,7 +14,6 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-
 public class Media {
 
         @Id
@@ -22,6 +25,4 @@ public class Media {
         @ManyToOne(fetch = FetchType.LAZY)
         @JoinColumn(name = "institute_id", nullable = false)
         private Institute institute;
-    }
-
-
+}

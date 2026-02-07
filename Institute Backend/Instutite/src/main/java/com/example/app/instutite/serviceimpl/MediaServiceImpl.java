@@ -14,42 +14,71 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-
 public class MediaServiceImpl implements MediaService {
 
-        private final MediaRepository mediaRepository;
-        private final InstituteRepository instituteRepository;
+    private final MediaRepository mediaRepository;
+    private final InstituteRepository instituteRepository;
 
-        @Override
-        public MediaResponse addMediaUrl(Long instituteId, String url) {
-            Institute institute = instituteRepository.findById(instituteId)
-                    .orElseThrow(() -> new RuntimeException("Institute not found"));
+    // ADD
+    @Override
+    public MediaResponse addMediaUrl(Long instituteId, String url) {
 
-            Media media = Media.builder()
-                    .imageUrl(url)
-                    .institute(institute)
-                    .build();
+        Institute institute = instituteRepository.findById(instituteId)
+                .orElseThrow(() -> new RuntimeException("Institute not found"));
 
-            Media saved = mediaRepository.save(media);
+        Media media = Media.builder()
+                .imageUrl(url)
+                .institute(institute)
+                .build();
 
-            return MediaResponse.builder()
-                    .id(saved.getId())
-                    .imageUrl(saved.getImageUrl())
-                    .build();
-        }
+        Media saved = mediaRepository.save(media);
 
-        @Override
-        public List<MediaResponse> getMediaByInstitute(Long instituteId) {
-            Institute institute = instituteRepository.findById(instituteId)
-                    .orElseThrow(() -> new RuntimeException("Institute not found"));
-
-            return mediaRepository.findByInstitute(institute)
-                    .stream()
-                    .map(media -> MediaResponse.builder()
-                            .id(media.getId())
-                            .imageUrl(media.getImageUrl())
-                            .build())
-                    .collect(Collectors.toList());
-        }
+        return MediaResponse.builder()
+                .id(saved.getId())
+                .imageUrl(saved.getImageUrl())
+                .build();
     }
 
+    // GET
+    @Override
+    public List<MediaResponse> getMediaByInstitute(Long instituteId) {
+
+        Institute institute = instituteRepository.findById(instituteId)
+                .orElseThrow(() -> new RuntimeException("Institute not found"));
+
+        return mediaRepository.findByInstitute(institute)
+                .stream()
+                .map(media -> MediaResponse.builder()
+                        .id(media.getId())
+                        .imageUrl(media.getImageUrl())
+                        .build())
+                .collect(Collectors.toList());
+    }
+
+    // UPDATE
+    @Override
+    public MediaResponse updateMedia(Long mediaId, String newUrl) {
+
+        Media media = mediaRepository.findById(mediaId)
+                .orElseThrow(() -> new RuntimeException("Media not found"));
+
+        media.setImageUrl(newUrl);
+
+        Media updated = mediaRepository.save(media);
+
+        return MediaResponse.builder()
+                .id(updated.getId())
+                .imageUrl(updated.getImageUrl())
+                .build();
+    }
+
+    // DELETE
+    @Override
+    public void deleteMedia(Long mediaId) {
+
+        Media media = mediaRepository.findById(mediaId)
+                .orElseThrow(() -> new RuntimeException("Media not found"));
+
+        mediaRepository.delete(media);
+    }
+}

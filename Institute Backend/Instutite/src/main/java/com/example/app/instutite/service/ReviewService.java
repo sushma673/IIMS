@@ -2,29 +2,18 @@ package com.example.app.instutite.service;
 
 
 import com.example.app.instutite.entity.Review;
-import com.example.app.instutite.repository.ReviewRepository;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@Service
-public class ReviewService {
-    private final ReviewRepository reviewRepository;
+public interface ReviewService {
 
-        public ReviewService(ReviewRepository reviewRepository) {
-            this.reviewRepository = reviewRepository;
-        }
+    Review addReview(String email, int rating, String comment);
 
-        public Review addReview(Review review) {
-            return reviewRepository.save(review);
-        }
+    Review updateReview(Long id, int rating, String comment);
 
-        public List<Review> getAllReviews() {
-            return reviewRepository.findAll();
-        }
+    void deleteReview(Long id);
 
-        public List<Review> getReviewsByUser(String username) {
-            return reviewRepository.findByUsername(username);
-        }
-    }
+    List<Review> getAllReviews();
 
+    List<Review> getReviewsByEmail(String email);
+}

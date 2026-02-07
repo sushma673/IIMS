@@ -23,7 +23,7 @@ public class JwtUtil {
         return Keys.hmacShaKeyFor(SECRET.getBytes(StandardCharsets.UTF_8));
     }
 
-    // ✅ Store role WITHOUT ROLE_ prefix
+    //  Store role WITHOUT ROLE_ prefix
     public String generateToken(String username, String role) {
         return Jwts.builder()
                 .setSubject(username)

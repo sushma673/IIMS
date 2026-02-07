@@ -1,47 +1,56 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
-import { adminLogin } from "../services/authService";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { toast } from "react-toastify";
+import AuthHeader from "../../components/AuthHeader";
+
+//  DIFFERENT background image than UserLogin
+const ADMIN_BG_IMAGE =
+  "https://images.unsplash.com/photo-1556761175-5973dc0f32e7?q=80&w=1920&auto=format&fit=crop";
 
 export default function AdminLogin() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
+  const navigate = useNavigate();
+
   const handleAdminLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
+
     try {
-      await adminLogin(email, password);
-      alert("Admin Login Successful");
+      await axios.post(
+        "http://localhost:8090/api/admin/login",
+        { email, password },
+        { headers: { "Content-Type": "application/json" } }
+      );
+
+      toast.success("Admin Login Successful ");
+      navigate("/admin/dashboard");
     } catch (err) {
-      alert("Admin login failed");
+      toast.error(err.response?.data || "Invalid Email or Password ❌");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen flex flex-col">
+      {/*  SAME NAV BAR AS USER LOGIN */}
+      <AuthHeader />
 
-      {/* ===== HEADER (same page-level header like others) ===== */}
-      <header className="bg-amber-800 text-white py-4 shadow">
-        <div className="max-w-7xl mx-auto px-6 flex justify-between items-center">
-          <Link to="/" className="text-2xl font-bold">
-            IIMS
-          </Link>
+      {/*  BACKGROUND SECTION */}
+      <div
+        className="flex-1 flex items-center justify-center bg-cover bg-center relative"
+        style={{ backgroundImage: `url('${ADMIN_BG_IMAGE}')` }}
+      >
+        {/* Overlay */}
+        <div className="absolute inset-0 bg-black/70"></div>
 
-          <nav className="flex gap-6 font-medium">
-            <Link to="/" className="hover:underline">Home</Link>
-            <Link to="/register" className="hover:underline">Register</Link>
-            <Link to="/login" className="hover:underline">User Login</Link>
-          </nav>
-        </div>
-      </header>
-
-      {/* ===== ADMIN LOGIN CARD ===== */}
-      <div className="flex items-center justify-center mt-16">
-        <div className="bg-white p-8 rounded shadow w-full max-w-md">
-          <h2 className="text-2xl font-bold mb-6 text-center">
+        {/* Admin Login Card */}
+        <div className="relative bg-white p-8 rounded-xl shadow-xl w-full max-w-md">
+          <h2 className="text-2xl font-bold mb-6 text-center text-gray-800">
             Admin Login
           </h2>
 
@@ -49,7 +58,8 @@ export default function AdminLogin() {
             <input
               type="email"
               placeholder="Admin Email"
-              className="w-full border p-3 rounded"
+              className="w-full border border-gray-300 p-3 rounded focus:outline-none focus:ring-2 focus:ring-amber-700"
+              value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
             />
@@ -57,16 +67,18 @@ export default function AdminLogin() {
             <input
               type="password"
               placeholder="Password"
-              className="w-full border p-3 rounded"
+              className="w-full border border-gray-300 p-3 rounded focus:outline-none focus:ring-2 focus:ring-amber-700"
+              value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
             />
 
             <button
+              type="submit"
               disabled={loading}
-              className="w-full bg-amber-800 text-white py-2 rounded hover:bg-amber-700"
+              className="w-full bg-amber-800 hover:bg-amber-900 text-white py-2 rounded transition disabled:opacity-60"
             >
-              {loading ? "Logging in..." : "Login"}
+              {loading ? "Logging..." : "Login"}
             </button>
           </form>
         </div>

@@ -1,14 +1,21 @@
 package com.example.app.instutite.dto;
+
+import lombok.*;
 import java.util.List;
 
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class CourseResponse {
 
-        public Long id;
-        public String courseName;
-        public String courseCode;
-        public String description;
-        public String duration;
-        public Double fees;
-        public Long instituteId;
+        private Long id;
+        private String courseName;
+        private String courseCode;
+        private String description;
+        private String duration;
+        private Double fees;
 
-    }
+        private List<SyllabusResponse> syllabus; //  syllabus list
+        private Long instituteId;               //  REQUIRED
+}

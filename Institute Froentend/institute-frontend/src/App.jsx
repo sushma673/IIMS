@@ -8,10 +8,11 @@ export default function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
-        {/* Toasts */}
-        <ToastContainer 
-          position="top-right" 
-          autoClose={3000} 
+
+        {/* ✅ SINGLE ToastContainer (GLOBAL) */}
+        <ToastContainer
+          position="top-right"
+          autoClose={2000}
           hideProgressBar={false}
           newestOnTop={false}
           closeOnClick
@@ -20,8 +21,9 @@ export default function App() {
           pauseOnHover
         />
 
-        {/* All User & Auth Routes */}
+        {/* Routes */}
         <AppRoutes />
+
       </AuthProvider>
     </BrowserRouter>
   );

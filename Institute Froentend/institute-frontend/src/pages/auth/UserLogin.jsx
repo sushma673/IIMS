@@ -2,17 +2,26 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
-import { useAuth } from "../../context/AuthContext";
 import AuthHeader from "../../components/AuthHeader";
+
+//  Different background image from AuthHeader
+const BG_IMAGE =
+  "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?q=80&w=1920&auto=format&fit=crop";
 
 export default function UserLogin() {
   const navigate = useNavigate();
-  const { login } = useAuth();
-  const [formData, setFormData] = useState({ email: "", password: "" });
+
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  });
   const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
   };
 
   const handleLogin = async (e) => {
@@ -20,51 +29,72 @@ export default function UserLogin() {
     setLoading(true);
 
     try {
-      const res = await axios.post("http://localhost:8090/auth/login", formData);
-      // backend returns token or user info
-      // we store email for reviews
-      login({ email: formData.email }); 
-      toast.success("Login successful!");
-      navigate("/home"); // redirect to home
+      const res = await axios.post("http://localhost:8090/auth/login", {
+        email: formData.email,
+        password: formData.password,
+      });
+
+      localStorage.setItem("token", res.data.token);
+      localStorage.setItem("userEmail", formData.email);
+
+      toast.success("Login successful");
+      navigate("/home");
     } catch (err) {
-      toast.error(err.response?.data || "Login failed");
+      toast.error("Invalid email or password");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <>
+    <div className="min-h-screen flex flex-col">
+      {/* Header */}
       <AuthHeader />
-      <div className="min-h-screen flex items-center justify-center bg-gray-100">
-        <div className="bg-white p-8 rounded shadow w-full max-w-md">
-          <h2 className="text-2xl font-bold text-center mb-6">Login</h2>
+
+      {/* Background Section */}
+      <div
+        className="flex-1 flex items-center justify-center bg-cover bg-center relative"
+        style={{ backgroundImage: `url('${BG_IMAGE}')` }}
+      >
+        {/* Dark Overlay */}
+        <div className="absolute inset-0 bg-black/70"></div>
+
+        {/* Login Card */}
+        <div className="relative bg-white p-8 rounded-xl shadow-xl w-full max-w-md">
+          <h2 className="text-2xl font-bold text-center mb-6 text-gray-800">
+            Login
+          </h2>
+
           <form onSubmit={handleLogin} className="space-y-4">
             <input
+              type="email"
               name="email"
               placeholder="Email"
-              type="email"
-              required
+              value={formData.email}
               onChange={handleChange}
-              className="w-full border p-3 rounded"
+              required
+              className="w-full border border-gray-300 p-3 rounded focus:outline-none focus:ring-2 focus:ring-amber-700"
             />
+
             <input
-              name="password"
               type="password"
+              name="password"
               placeholder="Password"
-              required
+              value={formData.password}
               onChange={handleChange}
-              className="w-full border p-3 rounded"
+              required
+              className="w-full border border-gray-300 p-3 rounded focus:outline-none focus:ring-2 focus:ring-amber-700"
             />
+
             <button
               disabled={loading}
-              className="w-full bg-amber-800 text-white py-2 rounded"
+              className="w-full bg-amber-800 hover:bg-amber-900 text-white py-2 rounded transition disabled:opacity-60"
             >
               {loading ? "Logging in..." : "Login"}
             </button>
           </form>
         </div>
       </div>
-    </>
+    </div>
   );
 }

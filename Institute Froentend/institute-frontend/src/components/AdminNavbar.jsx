@@ -1,22 +1,15 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { FaBell, FaUserCircle } from "react-icons/fa";
 
 export default function AdminNavbar() {
   return (
-    <aside className="w-64 bg-gray-800 text-white min-h-screen p-4">
-      <h2 className="text-xl font-bold mb-6">Admin Panel</h2>
+    <header className="flex justify-between items-center bg-white shadow px-6 py-4">
+      <h1 className="text-xl font-semibold">Admin Dashboard</h1>
 
-      <nav className="space-y-3">
-        <Link to="/admin" className="block hover:text-yellow-400">
-          Dashboard
-        </Link>
-        <Link to="/admin/manage-institutes" className="block hover:text-yellow-400">
-          Manage Institutes
-        </Link>
-        <Link to="/admin/media" className="block hover:text-yellow-400">
-          Media Gallery
-        </Link>
-      </nav>
-    </aside>
+      <div className="flex items-center gap-6">
+        <FaBell className="text-gray-600 text-lg cursor-pointer" />
+        <FaUserCircle className="text-gray-700 text-2xl cursor-pointer" />
+      </div>
+    </header>
   );
 }

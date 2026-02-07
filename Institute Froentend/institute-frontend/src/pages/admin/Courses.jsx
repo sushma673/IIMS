@@ -1,9 +1,16 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
+
+// 🔹 Background image URL
+const BG_IMAGE =
+  "https://images.unsplash.com/photo-1509062522246-3755977927d7?q=80&w=1920&auto=format&fit=crop";
 
 export default function Courses() {
   const [institutes, setInstitutes] = useState([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchInstitutesAndCourses();
@@ -11,18 +18,16 @@ export default function Courses() {
 
   const fetchInstitutesAndCourses = async () => {
     try {
-      // 1️⃣ Get all institutes
-      const instituteRes = await axios.get("http://localhost:8088/api/institutes", {
-        withCredentials: true, // ✅ if backend uses cookies/session
-      });
+      const instituteRes = await axios.get(
+        "http://localhost:8090/api/institutes"
+      );
+
       const institutesData = instituteRes.data;
 
-      // 2️⃣ For each institute, get its courses
       const institutesWithCourses = await Promise.all(
         institutesData.map(async (inst) => {
           const courseRes = await axios.get(
-            `http://localhost:8088/api/institutes/${inst.id}/courses`,
-            { withCredentials: true }
+            `http://localhost:8090/api/institutes/${inst.id}/courses`
           );
 
           return {
@@ -38,44 +43,126 @@ export default function Courses() {
     } catch (error) {
       console.error("Error loading courses ❌", error);
       setLoading(false);
+      toast.error("Failed to load courses");
     }
   };
 
+  // DELETE COURSE
+  const handleDeleteCourse = async (instituteId, courseId) => {
+    if (!window.confirm("Are you sure you want to delete?")) return;
+
+    try {
+      await axios.delete(
+        `http://localhost:8090/api/institutes/${instituteId}/courses/${courseId}`
+      );
+
+      toast.success("Course deleted successfully!");
+      fetchInstitutesAndCourses();
+    } catch {
+      toast.error("Failed to delete course");
+    }
+  };
+
+  // EDIT COURSE
+  const handleEditCourse = (instituteId, courseId) => {
+    navigate(`/edit-course/${instituteId}/${courseId}`);
+  };
+
   if (loading) {
-    return <div className="p-6">Loading courses...</div>;
+    return (
+      <div className="min-h-screen flex items-center justify-center text-white">
+        Loading courses...
+      </div>
+    );
   }
 
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold mb-6">All Courses</h1>
+    <div
+      className="min-h-screen bg-cover bg-center"
+      style={{ backgroundImage: `url('${BG_IMAGE}')` }}
+    >
+      {/* Overlay */}
+      <div className="min-h-screen bg-black/70 py-10 px-4">
+        <div className="max-w-6xl mx-auto bg-white rounded-xl shadow-xl p-6">
 
-      {institutes.map((inst, index) => (
-        <div key={index} className="mb-6">
-          {/* Institute Info */}
-          <h2 className="text-xl font-semibold text-orange-600 mb-1">
-            Institute ID: <span className="text-black">{inst.instituteId}</span>
-          </h2>
-          <h3 className="text-lg font-semibold text-blue-700 mb-3">
-            Name: {inst.instituteName}
-          </h3>
+          <h2 className="text-2xl font-bold mb-4">Courses</h2>
 
-          {/* Courses */}
-          {inst.courses.length === 0 ? (
-            <p className="text-gray-500 ml-4">No courses available</p>
-          ) : (
-            <ul className="ml-6 list-disc">
-              {inst.courses.map((course) => (
-                <li key={course.id} className="mb-1">
-                  <span className="font-medium">{course.courseName}</span>
-                  {course.duration && (
-                    <span className="text-gray-500"> – {course.duration}</span>
-                  )}
-                </li>
-              ))}
-            </ul>
-          )}
+          <table className="w-full text-left border-collapse">
+            <thead className="border-b bg-gray-100">
+              <tr>
+                <th className="py-3 px-2">Institute</th>
+                <th className="px-2">Course</th>
+                <th className="px-2">Duration</th>
+                <th className="px-2">Action</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {institutes.length === 0 ? (
+                <tr>
+                  <td colSpan="4" className="text-center py-6 text-gray-500">
+                    No courses found
+                  </td>
+                </tr>
+              ) : (
+                institutes.map((inst) =>
+                  inst.courses.length === 0 ? (
+                    <tr key={inst.instituteId}>
+                      <td colSpan="4" className="py-3 px-2 text-gray-500">
+                        No courses for {inst.instituteName}
+                      </td>
+                    </tr>
+                  ) : (
+                    inst.courses.map((course) => (
+                      <tr
+                        key={course.id}
+                        className="border-b hover:bg-gray-50 transition"
+                      >
+                        <td className="py-3 px-2 font-medium">
+                          {inst.instituteName}
+                        </td>
+
+                        <td className="px-2">{course.courseName}</td>
+
+                        <td className="px-2">
+                          {course.duration || "N/A"}
+                        </td>
+
+                        <td className="px-2">
+                          <button
+                            onClick={() =>
+                              handleEditCourse(
+                                inst.instituteId,
+                                course.id
+                              )
+                            }
+                            className="text-blue-600 hover:underline mr-3"
+                          >
+                            Edit
+                          </button>
+
+                          <button
+                            onClick={() =>
+                              handleDeleteCourse(
+                                inst.instituteId,
+                                course.id
+                              )
+                            }
+                            className="text-red-600 hover:underline"
+                          >
+                            Delete
+                          </button>
+                        </td>
+                      </tr>
+                    ))
+                  )
+                )
+              )}
+            </tbody>
+          </table>
+
         </div>
-      ))}
+      </div>
     </div>
   );
 }

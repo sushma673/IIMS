@@ -5,12 +5,9 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-
-
 public class DashboardCountResponse {
-
-        private long institutes;
-        private long courses;
-        private long media;
-    }
-
+    private long institutes;
+    private long courses;
+    private long users;
+    private long reviews;
+}

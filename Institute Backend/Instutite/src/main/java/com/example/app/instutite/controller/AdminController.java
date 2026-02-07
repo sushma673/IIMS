@@ -1,31 +1,46 @@
 package com.example.app.instutite.controller;
 
-import com.example.app.instutite.entity.User;
-import com.example.app.instutite.repository.UserRepository;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
+import com.example.app.instutite.entity.Admin;
+import com.example.app.instutite.service.AdminService;
+import com.example.app.instutite.Config.JwtUtil;   // ✅ IMPORT
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@RestController
-@RequestMapping("/admin")
-@CrossOrigin(origins="http://localhost:5173")
+import java.util.HashMap;
+import java.util.Map;
 
+@RestController
+@RequestMapping("/api/admin")
+@CrossOrigin(origins = "http://localhost:5173")
 public class AdminController {
 
-        private final UserRepository userRepository;
+    @Autowired
+    private AdminService service;
 
-        public AdminController(UserRepository userRepository) {
-            this.userRepository = userRepository;
-        }
-
-        // Only users with ADMIN role can access this endpoint
-        @PreAuthorize("hasRole('ADMIN')")
-        @GetMapping("/profile")
-        public User getProfile(Authentication authentication) {
-            String email = authentication.getName();
-
-            return userRepository.findByEmail(email)
-                    .orElseThrow(() -> new RuntimeException("Admin not found"));
-        }
+    // REGISTER
+    @PostMapping("/register")
+    public ResponseEntity<?> register(@RequestBody Admin admin) {
+        return ResponseEntity.ok(service.saveAdmin(admin));
     }
 
+    // LOGIN (NO TOKEN)
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody Admin admin) {
+
+        Admin dbAdmin = service.login(
+                admin.getEmail(),
+                admin.getPassword()
+        );
+
+        if (dbAdmin == null) {
+            return ResponseEntity
+                    .status(401)
+                    .body("Invalid credentials");
+        }
+
+        // ✅ ONLY SUCCESS MESSAGE
+        return ResponseEntity.ok("Login Success");
+    }
+}

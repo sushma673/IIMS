@@ -1,11 +1,8 @@
 package com.example.app.instutite.entity;
 
-import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
+import jakarta.persistence.*;
+import lombok.*;
 import java.time.LocalDateTime;
 
 @Getter
@@ -27,5 +24,4 @@ public class InstituteImage {
         @ManyToOne
         @JoinColumn(name = "institute_id")
         private Institute institute;
-    }
-
+}

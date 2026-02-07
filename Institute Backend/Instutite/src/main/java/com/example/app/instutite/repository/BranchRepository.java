@@ -1,8 +1,9 @@
 package com.example.app.instutite.repository;
 
+
+
 import com.example.app.instutite.entity.Branch;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface BranchRepository  extends JpaRepository<Branch, Long> {
-    }
-
+public interface BranchRepository extends JpaRepository<Branch, Long> {
+}

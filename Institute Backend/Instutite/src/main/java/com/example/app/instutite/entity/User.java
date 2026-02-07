@@ -34,9 +34,14 @@ public class User {
 
     private boolean emailVerified = false;
 
+    @Column(nullable = false)
+    private boolean enabled = true;  // maps to isEnabled()
+
+    @Column(nullable = false)
+    private boolean accountLocked = false;  // maps to isAccountLocked()
+
     // Constructors
-    public User() {
-    }
+    public User() {}
 
     public User(String email, String password, Role role) {
         this.email = email;
@@ -44,14 +49,4 @@ public class User {
         this.role = role;
         this.emailVerified = false;
     }
-
-    @Column(nullable = false)
-    private boolean enabled = true;  // maps to isEnabled()
-
-    @Column(nullable = false)
-    private boolean accountLocked = false;  // maps to isAccountLocked()
-
-
-
 }
-

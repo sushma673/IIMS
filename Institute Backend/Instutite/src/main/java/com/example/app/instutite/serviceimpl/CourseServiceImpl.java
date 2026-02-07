@@ -1,7 +1,5 @@
 package com.example.app.instutite.serviceimpl;
 
-
-
 import com.example.app.instutite.dto.CourseRequest;
 import com.example.app.instutite.dto.CourseResponse;
 import com.example.app.instutite.entity.Course;
@@ -29,37 +27,30 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public CourseResponse createCourse(CourseRequest dto) {
+
         boolean exists = courseRepository.findByCourseCode(dto.courseCode)
                 .filter(c -> c.getInstitute().getId().equals(dto.instituteId))
                 .isPresent();
 
         if (exists) {
-            throw new DuplicateCourseCodeException("Course code already exists for this institute");
+            throw new DuplicateCourseCodeException("Course code already exists");
         }
 
         Institute institute = instituteRepository.findById(dto.instituteId)
                 .orElseThrow(() -> new RuntimeException("Institute not found"));
 
         Course course = CourseMapper.toEntity(dto, institute);
-        Course saved = courseRepository.save(course);
-        return CourseMapper.toDto(saved);
+        return CourseMapper.toDto(courseRepository.save(course));
     }
 
     @Override
     public List<CourseResponse> createCourses(Long instituteId, List<CourseRequest> requests) {
+
         Institute institute = instituteRepository.findById(instituteId)
                 .orElseThrow(() -> new RuntimeException("Institute not found"));
 
         List<Course> courses = requests.stream()
-                .map(req -> {
-                    boolean exists = courseRepository.findByCourseCode(req.courseCode)
-                            .filter(c -> c.getInstitute().getId().equals(instituteId))
-                            .isPresent();
-                    if (exists) {
-                        throw new DuplicateCourseCodeException("Course code already exists: " + req.courseCode);
-                    }
-                    return CourseMapper.toEntity(req, institute);
-                })
+                .map(req -> CourseMapper.toEntity(req, institute))
                 .toList();
 
         return courseRepository.saveAll(courses)
@@ -70,6 +61,7 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public List<CourseResponse> getCoursesByInstitute(Long instituteId) {
+
         return courseRepository.findByInstituteId(instituteId)
                 .stream()
                 .map(CourseMapper::toDto)
@@ -78,9 +70,27 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public CourseResponse getCourseById(Long id) {
+
         Course course = courseRepository.findById(id)
                 .orElseThrow(() -> new CourseNotFoundException("Course not found"));
+
         return CourseMapper.toDto(course);
+    }
+
+    // ================= UPDATE =================
+    @Override
+    public CourseResponse updateCourse(Long courseId, CourseRequest request) {
+
+        Course course = courseRepository.findById(courseId)
+                .orElseThrow(() -> new CourseNotFoundException("Course not found"));
+
+        course.setCourseName(request.courseName);
+        course.setCourseCode(request.courseCode);
+        course.setDescription(request.description);
+        course.setDuration(request.duration);
+        course.setFees(request.fees);
+
+        return CourseMapper.toDto(courseRepository.save(course));
     }
 
     @Override

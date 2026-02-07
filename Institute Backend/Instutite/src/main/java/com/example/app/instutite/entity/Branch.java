@@ -1,11 +1,9 @@
 package com.example.app.instutite.entity;
 
-import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
+
+import jakarta.persistence.*;
+import lombok.*;
 import java.time.LocalDateTime;
 
 @Getter
@@ -14,7 +12,6 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Entity
 @Table(name = "branches")
-
 public class Branch {
 
         @Id
@@ -45,7 +42,6 @@ public class Branch {
 
         @PrePersist
         protected void onCreate() {
-            this.createdAt = LocalDateTime.now();
+                this.createdAt = LocalDateTime.now();
         }
-    }
-
+}
